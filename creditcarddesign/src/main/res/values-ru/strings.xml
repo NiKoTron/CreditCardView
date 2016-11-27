@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="card_holder">ДЕРЖАТЕЛЬ КАРТЫ</string>
+    <string name="card_expiry">СРОК КАРТЫ ИСТЕКАЕТ</string>
+    <string name="card_mm_yy">ММ/ГГ</string>
+    <string name="card_number">НОМЕР КАРТЫ</string>
+    <string name="done">ГОТОВО</string>
+    <string name="expiry">ИСТЕКАЕТ</string>
+    <string name="mm_yy">ММ/ГГ</string>
+    <string name="name_on_card">ИМЯ НА КАРТЕ</string>
+    <string name="next">ДАЛЕЕ</string>
+    <string name="previous">НАЗАД</string>
+    <string name="error_card_expired">Срок карты истекает</string>
+    <string name="card_holder_name_sample">ДЖОН ИВАНОВ</string>
+    <string name="error_invalid_month">Неверный месяц</string>
+</resources>

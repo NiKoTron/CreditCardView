@@ -1,16 +1,23 @@
 package com.cooltechworks.creditcarddesign;
 
-/**
- * Created by Harish on 01/01/16.
- */
+import android.text.TextUtils;
+
+import com.cooltechworks.creditcarddesign.interval.IntervalTree;
+
 public class CardSelector {
 
     public static final CardSelector VISA = new CardSelector(R.drawable.card_color_round_rect_purple, R.drawable.chip, R.drawable.chip_inner, android.R.color.transparent, R.drawable.ic_billing_visa_logo);
+    public static final CardSelector MIR = new CardSelector(R.drawable.card_color_round_rect_blue, R.drawable.chip, R.drawable.chip_inner, android.R.color.transparent, R.drawable.ic_billing_mir_logo);
     public static final CardSelector MASTER = new CardSelector(R.drawable.card_color_round_rect_pink, R.drawable.chip_yellow, R.drawable.chip_yellow_inner, android.R.color.transparent, R.drawable.ic_billing_mastercard_logo);
     public static final CardSelector AMEX = new CardSelector(R.drawable.card_color_round_rect_green, android.R.color.transparent, android.R.color.transparent, R.drawable.img_amex_center_face, R.drawable.ic_billing_amex_logo1);
     public static final CardSelector DEFAULT = new CardSelector(R.drawable.card_color_round_rect_default, R.drawable.chip, R.drawable.chip_inner, android.R.color.transparent, android.R.color.transparent);
-    private static final java.lang.String AMEX_PREFIX = "3";
 
+
+    public static final CardSelector UNION_PAY = new CardSelector(R.drawable.card_color_round_rect_green, R.drawable.chip, R.drawable.chip_inner, android.R.color.transparent, R.drawable.ic_billing_unionpay_logo);
+    public static final CardSelector DISCOVER = new CardSelector(R.drawable.card_color_round_rect_green, R.drawable.chip, R.drawable.chip_inner, android.R.color.transparent, R.drawable.ic_billing_discover_logo);
+    public static final CardSelector JCB = new CardSelector(R.drawable.card_color_round_rect_green, R.drawable.chip, R.drawable.chip_inner, android.R.color.transparent, R.drawable.ic_billing_jcb_logo);
+
+    private static IntervalTree<Integer, CardSelector> dictionary = null;
 
     private int mResCardId;
     private int mResChipOuterId;
@@ -63,32 +70,45 @@ public class CardSelector {
         return mResLogoId;
     }
 
+
     public void setResLogoId(int mResLogoId) {
         this.mResLogoId = mResLogoId;
     }
 
-
-    public static CardSelector selectCard(char cardFirstChar) {
-
-        switch (cardFirstChar) {
-            case '4':
-                return VISA;
-            case '5':
-                return MASTER;
-            case '3':
-                return AMEX;
-            default:
-                return DEFAULT;
+    public static IntervalTree<Integer, CardSelector> getCardDicitionary(){
+        if(dictionary == null) {
+            dictionary = new IntervalTree<>();
+            dictionary.put(3400, 3499, AMEX);
+            dictionary.put(3700, 3799, AMEX);
+            dictionary.put(6200, 6299, UNION_PAY);
+            dictionary.put(6011, DISCOVER);
+            dictionary.put(6221, 6229, DISCOVER); //622126, 622925
+            dictionary.put(6440, 6499, DISCOVER);
+            dictionary.put(6500, 6599, DISCOVER);
+            dictionary.put(3528, 3589, JCB);
+            dictionary.put(2221, 2720, MASTER); //since 2017
+            dictionary.put(5100, 5599, MASTER);
+            dictionary.put(2200, 2204, MIR);
+            dictionary.put(4000, 4999, VISA);
         }
+        return dictionary;
     }
 
     public static CardSelector selectCard(String cardNumber) {
 
-        if(cardNumber != null && cardNumber.length() >= 3) {
-            CardSelector selector = selectCard(cardNumber.charAt(0));
-            
-            if(cardNumber.startsWith(AMEX_PREFIX)) {
-                return AMEX;
+        CardSelector selector = DEFAULT;
+
+        if(cardNumber != null && cardNumber.length() > 3) {
+
+            String subs = cardNumber.substring(0, 4).replaceAll("\\D+", "");
+            if(TextUtils.isEmpty(subs)){
+                return selector;
+            }
+
+            selector = getCardDicitionary().search(Integer.parseInt(subs));
+
+            if(selector == null){
+                selector = DEFAULT;
             }
 
             if(selector != DEFAULT) {
@@ -110,10 +130,8 @@ public class CardSelector {
                 selector.setResCardId(drawables[index]);
                 selector.setResChipOuterId(chipOuter[chipIndex]);
                 selector.setResChipInnerId(chipInner[chipIndex]);
-
-                return selector;
             }
         }
-        return DEFAULT;
+        return selector;
     }
 }
